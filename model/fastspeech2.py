@@ -43,6 +43,7 @@ class FastSpeech2(nn.Module):
     def forward(
         self,
         speakers,
+        embds,
         texts,
         src_lens,
         max_src_len,
@@ -66,7 +67,7 @@ class FastSpeech2(nn.Module):
         output = self.encoder(texts, src_masks)
 
         if self.speaker_emb is not None:
-            output = output + self.speaker_emb(speakers).unsqueeze(1).expand(
+            output = output + torch.from_numpy(embds).expand(
                 -1, max_src_len, -1
             )
 
