@@ -174,22 +174,21 @@ if __name__ == "__main__":
         type = str,
         help = "path to the audio file to be synthesized",
     )
-    # args = parser.parse_args(
-    #     ["--restore_step", "0", "--mode", "single", "--text", "I am a student"]
+    args = parser.parse_args()
+    # args = argparse.Namespace(
+    #     restore_step=800000,
+    #     mode="single",
+    #     source=None,
+    #     speaker_id = 1,
+    #     text="Hello, how are you?",
+    #     preprocess_config="./config/LibriTTS/preprocess.yaml",
+    #     model_config="./config/LibriTTS/model.yaml",
+    #     train_config="./config/LibriTTS/train.yaml",
+    #     pitch_control=1.0,
+    #     energy_control=1.0,
+    #     duration_control=1.0,
+    #     fpath="",
     # )
-    args = argparse.Namespace(
-        restore_step=800000,
-        mode="single",
-        source=None,
-        text="Hello, how are you?",
-        preprocess_config="./config/LibriTTS/preprocess.yaml",
-        model_config="./config/LibriTTS/model.yamlmodel.yaml",
-        train_config="./config/LibriTTS/train.yaml",
-        pitch_control=1.0,
-        energy_control=1.0,
-        duration_control=1.0,
-        fpath="",
-    )
     # Check source texts
     if args.mode == "batch":
         assert args.source is not None and args.text is None

@@ -56,7 +56,7 @@ def to_device(data, device):
             durations,
         )
 
-    if len(data) == 6:
+    if len(data) == 7:
         (ids, raw_texts, speakers, embds, texts, src_lens, max_src_len) = data
 
         speakers = torch.from_numpy(speakers).long().to(device)
@@ -209,6 +209,7 @@ def synth_samples(targets, predictions, vocoder, model_config, preprocess_config
     sampling_rate = preprocess_config["preprocessing"]["audio"]["sampling_rate"]
     for wav, basename in zip(wav_predictions, basenames):
         wavfile.write(os.path.join(path, "{}.wav".format(basename)), sampling_rate, wav)
+    return wav_predictions
 
 
 def plot_mel(data, stats, titles):
