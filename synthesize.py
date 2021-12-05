@@ -1,10 +1,11 @@
 import re
 import argparse
 from string import punctuation
-
+from pathlib import Path
 import torch
 import yaml
 import numpy as np
+from resemblyzer import VoiceEncoder, preprocess_wav
 from torch.utils.data import DataLoader
 from g2p_en import G2p
 from pypinyin import pinyin, Style
@@ -15,7 +16,7 @@ from dataset import TextDataset
 from text import text_to_sequence
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
+encoder = VoiceEncoder(device = device)
 
 def read_lexicon(lex_path):
     lexicon = {}
@@ -168,8 +169,27 @@ if __name__ == "__main__":
         default=1.0,
         help="control the speed of the whole utterance, larger value for slower speaking rate",
     )
-    args = parser.parse_args()
-
+    parser.add_argument(
+        "--fpath",
+        type = str,
+        help = "path to the audio file to be synthesized",
+    )
+    # args = parser.parse_args(
+    #     ["--restore_step", "0", "--mode", "single", "--text", "I am a student"]
+    # )
+    args = argparse.Namespace(
+        restore_step=800000,
+        mode="single",
+        source=None,
+        text="Hello, how are you?",
+        preprocess_config="./config/LibriTTS/preprocess.yaml",
+        model_config="./config/LibriTTS/model.yamlmodel.yaml",
+        train_config="./config/LibriTTS/train.yaml",
+        pitch_control=1.0,
+        energy_control=1.0,
+        duration_control=1.0,
+        fpath="",
+    )
     # Check source texts
     if args.mode == "batch":
         assert args.source is not None and args.text is None
@@ -189,6 +209,10 @@ if __name__ == "__main__":
 
     # Load vocoder
     vocoder = get_vocoder(model_config, device)
+    
+    fpath = Path(args.fpath)
+    wav = preprocess_wav(fpath)
+    embd = encoder.embed_utterance(wav)
 
     # Preprocess texts
     if args.mode == "batch":
@@ -207,7 +231,7 @@ if __name__ == "__main__":
         elif preprocess_config["preprocessing"]["text"]["language"] == "zh":
             texts = np.array([preprocess_mandarin(args.text, preprocess_config)])
         text_lens = np.array([len(texts[0])])
-        batchs = [(ids, raw_texts, speakers, texts, text_lens, max(text_lens))]
+        batchs = [(ids, raw_texts, speakers, embd, texts, text_lens, max(text_lens))]
 
     control_values = args.pitch_control, args.energy_control, args.duration_control
 
