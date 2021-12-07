@@ -11,13 +11,14 @@ from utils.tools import pad_1D, pad_2D
 
 class Dataset(Dataset):
     def __init__(
-        self, filename, preprocess_config, train_config, sort=False, drop_last=False
+        self, filename, preprocess_config, train_config, embed_path, sort=False, drop_last=False
     ):
         self.dataset_name = preprocess_config["dataset"]
         self.preprocessed_path = preprocess_config["path"]["preprocessed_path"]
         self.cleaners = preprocess_config["preprocessing"]["text"]["text_cleaners"]
         self.batch_size = train_config["optimizer"]["batch_size"]
-
+        with open(embed_path, "r") as f:
+            self.speaker_embds = json.load(f.read())
         self.basename, self.speaker, self.text, self.raw_text = self.process_meta(
             filename
         )
@@ -63,6 +64,7 @@ class Dataset(Dataset):
         sample = {
             "id": basename,
             "speaker": speaker_id,
+            "embds": torch.tensor(self.speaker_embds[speaker]).float(),
             "text": phone,
             "raw_text": raw_text,
             "mel": mel,

@@ -26,19 +26,19 @@ class FastSpeech2(nn.Module):
         )
         self.postnet = PostNet()
 
-        self.speaker_emb = None
-        if model_config["multi_speaker"]:
-            with open(
-                os.path.join(
-                    preprocess_config["path"]["preprocessed_path"], "speakers.json"
-                ),
-                "r",
-            ) as f:
-                n_speaker = len(json.load(f))
-            self.speaker_emb = nn.Embedding(
-                n_speaker,
-                model_config["transformer"]["encoder_hidden"],
-            )
+        # self.speaker_emb = None
+        # if model_config["multi_speaker"]:
+        #     with open(
+        #         os.path.join(
+        #             preprocess_config["path"]["preprocessed_path"], "speakers.json"
+        #         ),
+        #         "r",
+        #     ) as f:
+        #         n_speaker = len(json.load(f))
+        #     self.speaker_emb = nn.Embedding(
+        #         n_speaker,
+        #         model_config["transformer"]["encoder_hidden"],
+        #     )
 
     def forward(
         self,
@@ -66,8 +66,8 @@ class FastSpeech2(nn.Module):
 
         output = self.encoder(texts, src_masks)
 
-        if self.speaker_emb is not None:
-            output = output + embds
+        # if self.speaker_emb is not None:
+        output = output + embds
 
         (
             output,
