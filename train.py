@@ -163,9 +163,9 @@ def main(args, configs):
                 if step == total_step:
                     quit()
                 step += 1
-                outer_bar.update(1)
-
-            inner_bar.update(1)
+                inner_bar.update(1)
+        
+        outer_bar.update(1)
         epoch += 1
 
 

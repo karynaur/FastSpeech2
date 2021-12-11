@@ -18,7 +18,7 @@ class Dataset(Dataset):
         self.cleaners = preprocess_config["preprocessing"]["text"]["text_cleaners"]
         self.batch_size = train_config["optimizer"]["batch_size"]
         with open(embed_path, "r") as f:
-            self.speaker_embds = json.load(f.read())
+            self.speaker_embds = json.load(f)
         self.basename, self.speaker, self.text, self.raw_text = self.process_meta(
             filename
         )
@@ -94,6 +94,7 @@ class Dataset(Dataset):
     def reprocess(self, data, idxs):
         ids = [data[idx]["id"] for idx in idxs]
         speakers = [data[idx]["speaker"] for idx in idxs]
+        embds = pad_2D([data[idx]["embds"] for idx in idxs])
         texts = [data[idx]["text"] for idx in idxs]
         raw_texts = [data[idx]["raw_text"] for idx in idxs]
         mels = [data[idx]["mel"] for idx in idxs]
@@ -115,6 +116,7 @@ class Dataset(Dataset):
             ids,
             raw_texts,
             speakers,
+            embds,
             texts,
             text_lens,
             max(text_lens),

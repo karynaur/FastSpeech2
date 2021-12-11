@@ -9,3 +9,5 @@ mkdir output/ckpt/LibriTTS/
 mkdir output/result
 mkdir output/result/LibriTTS/
 mv LibriTTS_800000.pth.tar output/ckpt/LibriTTS/800000.pth.tar
+mkdir raw_data
+mkdir raw_data/LibriTTS/
